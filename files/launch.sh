@@ -15,10 +15,10 @@ yarn="build"
 yarn_start="yarn && yarn lint --fix && yarn build && php artisan migrate && php artisan view:clear && php artisan cache:clear && php artisan route:clear"
 
 reinstall_a="reinstall all"
-reinstall_a_start="rm -rf painel && rm -rf logs/panel* && rm -rf nginx && rm -rf php-fpm"
+reinstall_a_start="rm -rf pterodactyl && rm -rf logs/panel* && rm -rf nginx && rm -rf php-fpm"
 
-reinstall_p="reinstall painel"
-reinstall_p_start="rm -rf painel && rm -rf logs/panel*"
+reinstall_p="reinstall pterodactyl"
+reinstall_p_start="rm -rf pterodactyl && rm -rf logs/panel*"
 
 reinstall_n="reinstall nginx"
 reinstall_n_start="rm -rf nginx"
@@ -31,13 +31,12 @@ lightblue=$(echo -en "\e[94m")
 normal=$(echo -en "\e[0m")
 rm -rf /home/container/tmp/*
 printf "
- ______                        _      _                             _ 
-(_____ \                      | |    | |               _           | |
- _____) )  ____  ____    ____ | |  _ | |  ____   ____ | |_   _   _ | |
-|  ____/  / _  ||  _ \  / _  )| | / || | / _  | / ___)|  _) | | | || |
-| |      ( ( | || | | |( (/ / | |( (_| |( ( | |( (___ | |__ | |_| || |
-|_|       \_||_||_| |_| \____)|_| \____| \_||_| \____) \___) \__  ||_|
-                                                            (____/    
+  ____      _   _                              _ 
+ / ___|__ _| |_| |    ___  __ _  ___ _ __   __| |
+| |   / _` | __| |   / _ \/ _` |/ _ \ '_ \ / _` |
+| |__| (_| | |_| |__|  __/ (_| |  __/ | | | (_| |
+ \____\__,_|\__|_____\___|\__, |\___|_| |_|\__,_|
+                          |___/
 \n \n"
 echo "🟢  Iniciando PHP-FPM..."
 nohup /usr/sbin/php-fpm81 --fpm-config /home/container/php-fpm/php-fpm.conf --daemonize >/dev/null 2>&1 &
@@ -50,10 +49,10 @@ else
     MGM="em ${SERVER_IP}:${SERVER_PORT}"
 fi
 echo "🟢  Inicializado com sucesso ${MGM}..."
-echo "🟢  Iniciando worker do painel.."
-nohup php /home/container/painel/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3 >/dev/null 2>&1 &
+echo "🟢  Iniciando worker do pterodactyl.."
+nohup php /home/container/pterodactyl/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3 >/dev/null 2>&1 &
 echo "🟢  Iniciando cron..."
-nohup bash <(curl -s https://raw.githubusercontent.com/Ashu11-A/Ashu_eggs/main/Paneldactyl/cron.sh) >/dev/null 2>&1 &
+nohup bash <(curl -s https://raw.githubusercontent.com/CatLegendDev/pterodactyl-egg/main/files/cron.sh) >/dev/null 2>&1 &
 
 echo "📃  Comandos Disponíveis: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}. Use ${bold}${lightblue}help${normal} para saber mais..."
 
@@ -69,7 +68,7 @@ while read -r line; do
 | database  |  Configurar Banco de Dados            |
 | migrate   |  Migração de banco de dados           |
 | user      |  Criar usuário                        |
-| build     |  Builda o painel com Yarn             |
+| build     |  Builda o pterodactyl com Yarn             |
 | reinstall |  Reinstala algo ou tudo               |
 +-----------+---------------------------------------+
         "
@@ -77,51 +76,51 @@ while read -r line; do
 
         Comando1="${composer_start}"
         echo "Instalando pacotes do Composer: ${bold}${lightblue}${Comando1}"
-        eval "cd /home/container/painel && $Comando1 && cd .."
+        eval "cd /home/container/pterodactyl && $Comando1 && cd .."
         printf "\n \n✅  Comando Executado\n \n"
     elif [[ "$line" == "setup" ]]; then
 
         Comando2="${setup_start}"
-        echo "Configurando ambiente do painel: ${bold}${lightblue}${Comando2}"
-        eval "cd /home/container/painel && $Comando2 && cd .."
+        echo "Configurando ambiente do pterodactyl: ${bold}${lightblue}${Comando2}"
+        eval "cd /home/container/pterodactyl && $Comando2 && cd .."
         printf "\n \n✅  Comando Executado\n \n"
 
     elif [[ "$line" == "database" ]]; then
 
         Comando3="${database_start}"
-        echo "Configurando ambiente do painel: ${bold}${lightblue}${Comando3}"
-        eval "cd /home/container/painel && $Comando3 && cd .."
+        echo "Configurando ambiente do pterodactyl: ${bold}${lightblue}${Comando3}"
+        eval "cd /home/container/pterodactyl && $Comando3 && cd .."
         printf "\n \n✅  Comando Executado\n \n"
 
     elif [[ "$line" == "migrate" ]]; then
 
         Comando4="${migrate_start}"
         echo "Migrando banco de dados: ${bold}${lightblue}${Comando4}"
-        eval "cd /home/container/painel && $Comando4 && cd .."
+        eval "cd /home/container/pterodactyl && $Comando4 && cd .."
         printf "\n \n✅  Comando Executado\n \n"
 
     elif [[ "$line" == "${user_make}" ]]; then
 
         Comando5="${user_start}"
         echo "Criando usuário: ${bold}${lightblue}${Comando5}"
-        eval "cd /home/container/painel && $Comando5 && cd .."
+        eval "cd /home/container/pterodactyl && $Comando5 && cd .."
         printf "\n \n✅  Comando Executado\n \n"
 
     elif [[ "$line" == "${yarn}" ]]; then
 
         Comando6="${yarn_start}"
-        echo "Buildando painel: ${bold}${lightblue}${Comando6}"
+        echo "Buildando pterodactyl: ${bold}${lightblue}${Comando6}"
         echo -e "\n \n⚠️  São necessários no mínimo 2 GB de memória RAM"
         echo -e "📃  Memoria RAM disponivel: ${bold}${lightblue}${SERVER_MEMORY} MB\n \n"
-        eval "cd /home/container/painel && $Comando6 && cd .."
+        eval "cd /home/container/pterodactyl && $Comando6 && cd .."
         printf "\n \n✅  Comando Executado\n \n"
 
     elif [[ "$line" == "reinstall" ]]; then
-        echo -e "❗️  \e[1m\e[94mEsse Comando necessita de uma opção use:\n \n${bold}${lightblue}reinstall all ${normal}(reinstala o painel, nginx, php-fpm)\n \n${bold}${lightblue}reinstall painel ${normal}(reinstala somente o painel)\n \n${bold}${lightblue}reinstall nginx ${normal}(reinstala somente o nginx) \n \n${bold}${lightblue}reinstall php-fpm ${normal}(reinstala somente o php-fpm)"
+        echo -e "❗️  \e[1m\e[94mEsse Comando necessita de uma opção use:\n \n${bold}${lightblue}reinstall all ${normal}(reinstala o pterodactyl, nginx, php-fpm)\n \n${bold}${lightblue}reinstall pterodactyl ${normal}(reinstala somente o pterodactyl)\n \n${bold}${lightblue}reinstall nginx ${normal}(reinstala somente o nginx) \n \n${bold}${lightblue}reinstall php-fpm ${normal}(reinstala somente o php-fpm)"
 
     elif [[ "$line" == "${reinstall_a}" ]]; then
 
-        echo "📌  Reinstalando o painel, nginx e php-fpm..."
+        echo "📌  Reinstalando o pterodactyl, nginx e php-fpm..."
         printf "\n \n⚠️  Tem certeza que deseja Reinstalar? [y/N]\n \n"
         read -r response
         case "$response" in

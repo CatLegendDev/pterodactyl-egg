@@ -15,7 +15,7 @@ if [[ -f "./logs/egg_version" ]]; then
 ⚠️  Egg Desatualizado.
 🔴  Versão Instalado: ${versions}
 🟢  Versão mais Recente: ${version_egg}
-🌐  Acesse: https://github.com/Ashu11-A/Ashu_eggs
+🌐  Acesse: https://github.com/CatLegendDev/pterodactyl-egg
     
 "
         fi
@@ -27,7 +27,7 @@ else
 🔴  Versão Instalado: 1.0 (respectivamente).
 🟠  Caso tenha acabado de atualizar o Egg, basta Reinstalar seu Servidor (nada será apagado).
 🟢  Versão mais Recente: ${version_egg}
-🌐  Acesse: https://github.com/Ashu11-A/Ashu_eggs
+🌐  Acesse: https://github.com/CatLegendDev/pterodactyl-egg
     
 "
 fi

@@ -4,28 +4,8 @@ bold=$(echo -en "\e[1m")
 lightblue=$(echo -en "\e[94m")
 normal=$(echo -en "\e[0m")
 
-if [ -z "${PANEL}" ]; then ## Caso a variavel ${PANEL} não existir por algum motivo desconhecido
-    GITHUB_PACKAGE=Next-Panel/Jexactyl-BR
-    FILE=panel.tar.gz
-else
-    if [ "${PANEL}" = "Pterodactyl" ]; then
-        GITHUB_PACKAGE=pterodactyl/panel
-        FILE=panel.tar.gz
-    elif [ "${PANEL}" = "Jexactyl" ]; then
-        GITHUB_PACKAGE=Jexactyl/Jexactyl
-        FILE=panel.tar.gz
-    elif [ "${PANEL}" = "Jexactyl Brasil" ]; then
-        GITHUB_PACKAGE=Next-Panel/Jexactyl-BR
-        FILE=panel.tar.gz
-    elif [ "${PANEL}" = "Pterodactyl Brasil" ]; then
-        GITHUB_PACKAGE=Next-Panel/Pterodactyl-BR
-        FILE=panel.tar.gz
-    elif [ "${PANEL}" != "Pterodactyl" ] && [ "${PANEL}" != "Jexactyl" ] && [ "${PANEL}" != "Jexactyl Brasil" ] && [ "${PANEL}" != "Pterodactyl Brasil" ]; then ## Verifica se...
-        echo "Por algum motivo não foi possivel detectar o Painel que será instalado, instalando por padrão: Jexactyl Brasil"
-        GITHUB_PACKAGE=Next-Panel/Jexactyl-BR
-        FILE=panel.tar.gz
-    fi
-fi
+GITHUB_PACKAGE=pterodactyl/panel
+FILE=panel.tar.gz
 
 LATEST_JSON=$(curl --silent "https://api.github.com/repos/$GITHUB_PACKAGE/releases" | jq -c '.[]' | head -1)
 RELEASES=$(curl --silent "https://api.github.com/repos/$GITHUB_PACKAGE/releases" | jq '.[]')
@@ -43,13 +23,13 @@ else
     fi
 fi
 if [ -z "${GIT_ADDRESS}" ]; then
-    if [ -d "/home/container/painel" ]; then
+    if [ -d "/home/container/pterodactyl" ]; then
         printf "\n \n📄  Verificando Instalação...\n \n"
         printf "+----------+---------------------------------+\n| Tarefa   | Status                          |\n+----------+---------------------------------+"
         printf "\n| Painel   | 🟢  Instalado                    |"
     else
         cat <<EOF >./logs/log_install.txt
-Versão: ${VERSION}
+Version: ${VERSION}
 Git: ${GITHUB_PACKAGE}
 Git_file: ${FILE}
 Link: ${DOWNLOAD_LINK}
@@ -59,30 +39,30 @@ EOF
         printf "+----------+---------------------------------+\n| Tarefa   | Status                          |\n+----------+---------------------------------+"
         printf "\n| Painel   | 🟡  Baixando Painel               |\n"
         curl -sSL "${DOWNLOAD_LINK}" -o "${DOWNLOAD_LINK##*/}"
-        mkdir painel
-        mv "${DOWNLOAD_LINK##*/}" painel
+        mkdir pterodactyl
+        mv "${DOWNLOAD_LINK##*/}" pterodactyl
         (
-            cd painel || exit
-            echo -e "Unpacking server files"
+            cd pterodactyl || exit
+            echo -e "Распаковка серверных файлов..."
             tar -xvzf "${DOWNLOAD_LINK##*/}"
             rm -rf "${DOWNLOAD_LINK##*/}"
             fakeroot chmod -R 755 storage/* bootstrap/cache/
-            fakeroot chown -R nginx:nginx /home/container/painel/*
+            fakeroot chown -R nginx:nginx /home/container/pterodactyl/*
         )
         if [ -f "logs/panel_database_instalado" ]; then
-            if [ ! -f "painel/.env" ]; then
+            if [ ! -f "pterodactyl/.env" ]; then
                 if [ -f "backups/executado" ]; then
                     (
-                        cd painel || exit
+                        cd pterodactyl || exit
                         composer install --no-interaction --no-dev --optimize-autoloader
                     )
                     echo "🔴  Uma irregularidade foi encontrada, restaurando .env..."
                     (
                         cd backups || exit
-                        cp $(ls .env* -t | head -1) ../painel/.env
+                        cp $(ls .env* -t | head -1) ../pterodactyl/.env
                     )
                 else
-                    printf "\n📢  Atenção: MEU DEUS OQUE VOCÊ FEZ😱 😱  ??\n🥶  Oque você fez: Possivelmente você apagou a pasta painel sem querer ou querendo, mas pelas minhas informações o painel já havia sido instalado  \n🫠  mano se vai ter que criar um database novo se você perdeu seu .env😨\n🔴  PARA PROSSEGUIR APAGUE OS ARQUIVO COM NOME PANEL NA PASTA LOGS PARA QUE O EGG CONSIGA INSTALAR CORRETAMENTE  🔴\n"
+                    printf "\n📢  Atenção: MEU DEUS OQUE VOCÊ FEZ😱 😱  ??\n🥶  Oque você fez: Possivelmente você apagou a pasta pterodactyl sem querer ou querendo, mas pelas minhas informações o pterodactyl já havia sido instalado  \n🫠  mano se vai ter que criar um database novo se você perdeu seu .env😨\n🔴  PARA PROSSEGUIR APAGUE OS ARQUIVO COM NOME PANEL NA PASTA LOGS PARA QUE O EGG CONSIGA INSTALAR CORRETAMENTE  🔴\n"
                     printf "\n \n📌  Apagar os arquivos panel da pasta logs? [y/N]\n \n"
                     read -r response
                     case "$response" in
@@ -106,9 +86,9 @@ else
         GIT_ADDRESS="https://${USERNAME}:${ACCESS_TOKEN}@$(echo -e "${GIT_ADDRESS}" | cut -d/ -f3-)"
     fi
     ## pull git js bot repo
-    if [ -d "/home/container/painel" ]; then
+    if [ -d "/home/container/pterodactyl" ]; then
         (
-            cd painel || exit
+            cd pterodactyl || exit
             if [ -d ".git" ]; then
                 if [ -f ".git/config" ]; then
                     ORIGIN=$(git config --get remote.origin.url)
@@ -122,34 +102,34 @@ else
                 echo "📁  Puxando o mais recente do GitHub"
                 git pull --quiet
                 fakeroot chmod -R 755 storage/* bootstrap/cache/
-                fakeroot chown -R nginx:nginx /home/container/painel/*
+                fakeroot chown -R nginx:nginx /home/container/pterodactyl/*
             fi
         )
     else
         if [ -z "${BRANCH}" ]; then
             echo -e "📋  Clonando ramo padrão"
-            git clone --quiet "${GIT_ADDRESS}" ./painel
+            git clone --quiet "${GIT_ADDRESS}" ./pterodactyl
         else
             echo -e "📋  Clonando ${BRANCH}'"
-            git clone --quiet --single-branch --branch "${BRANCH}" "${GIT_ADDRESS}" ./painel
+            git clone --quiet --single-branch --branch "${BRANCH}" "${GIT_ADDRESS}" ./pterodactyl
         fi
-        fakeroot chmod -R 755 /home/container/painel/storage/* /home/container/painel/bootstrap/cache/
-        fakeroot chown -R nginx:nginx /home/container/painel/*
-        touch ./painel/panel_github_instalado
+        fakeroot chmod -R 755 /home/container/pterodactyl/storage/* /home/container/pterodactyl/bootstrap/cache/
+        fakeroot chown -R nginx:nginx /home/container/pterodactyl/*
+        touch ./pterodactyl/panel_github_instalado
         if [ -f "logs/panel_database_instalado" ]; then
-            if [ ! -f "painel/.env" ]; then
+            if [ ! -f "pterodactyl/.env" ]; then
                 if [ -f "backups/executado" ]; then
                     (
-                        cd painel || exit
+                        cd pterodactyl || exit
                         composer install --no-interaction --no-dev --optimize-autoloader
                     )
                     echo "🔴  Uma irregularidade foi encontrada, restaurando .env..."
                     (
                         cd backups || exit
-                        cp $(ls .env* -t | head -1) ../painel/.env
+                        cp $(ls .env* -t | head -1) ../pterodactyl/.env
                     )
                 else
-                    printf "\n📢  Atenção: MEU DEUS OQUE VOCÊ FEZ😱 😱  ??\n🥶  Oque você fez: Possivelmente você apagou a pasta painel sem querer ou querendo, mas pelas minhas informações o painel já havia sido instalado  \n🫠  mano se vai ter que criar um database novo se você perdeu seu .env😨\n🔴  PARA PROSSEGUIR APAGUE OS ARQUIVO COM NOME PANEL NA PASTA LOGS PARA QUE O EGG CONSIGA INSTALAR CORRETAMENTE  🔴\n"
+                    printf "\n📢  Atenção: MEU DEUS OQUE VOCÊ FEZ😱 😱  ??\n🥶  Oque você fez: Possivelmente você apagou a pasta pterodactyl sem querer ou querendo, mas pelas minhas informações o pterodactyl já havia sido instalado  \n🫠  mano se vai ter que criar um database novo se você perdeu seu .env😨\n🔴  PARA PROSSEGUIR APAGUE OS ARQUIVO COM NOME PANEL NA PASTA LOGS PARA QUE O EGG CONSIGA INSTALAR CORRETAMENTE  🔴\n"
                     printf "\n \n📌  Apagar os arquivos panel da pasta logs? [y/N]\n \n"
                     read -r response
                     case "$response" in
@@ -166,7 +146,7 @@ else
     printf "+----------+---------------------------------+\n| Tarefa   | Status                          |\n+----------+---------------------------------+"
     printf "\n| Painel   | 🟡  Puxando arquivos             |"
 fi
-if [ -d "temp" ]; then ## Evita conflitos no painel pelo comando seguinte do git
+if [ -d "temp" ]; then ## Evita conflitos no pterodactyl pelo comando seguinte do git
     rm -rf temp
 fi
 git clone --quiet https://github.com/Ashu11-A/nginx ./temp ## Sim, ele sempre irá clonar o repo idenpendente de tudo
@@ -176,7 +156,7 @@ else
     printf "\n| Nginx    | 🟡  Baixando Nginx...            |"
     cp -r ./temp/nginx ./
     rm nginx/conf.d/default.conf
-    curl -sSL https://raw.githubusercontent.com/Ashu11-A/Ashu_eggs/main/Paneldactyl/default.conf -o ./nginx/conf.d/default.conf
+    curl -sSL https://raw.githubusercontent.com/CatLegendDev/pterodactyl-egg/main/files/default.conf -o ./nginx/conf.d/default.conf
     sed -i \
         -e "s/listen.*/listen ${SERVER_PORT};/g" \
         nginx/conf.d/default.conf
@@ -209,30 +189,30 @@ else
 fi
 cp -r ./temp/logs ./
 if [ "${OCC}" == "1" ]; then
-    cd painel || exit
+    cd pterodactyl || exit
     php "${COMMANDO_OCC}"
     exit
 else
     if [ -f "logs/panel_database_instalado" ]; then
         echo "| Env      | 🟢  Configurado                  |"
     else
-        if [ ! -f "painel/.env" ]; then
+        if [ ! -f "pterodactyl/.env" ]; then
             if [ -f "backups/executado" ]; then
                 echo "| Env      | 🔴  Restaurando .env...          |"
                 (
                     cd backups || exit
-                    cp $(ls .env* -t | head -1) ../painel/.env
+                    cp $(ls .env* -t | head -1) ../pterodactyl/.env
                 )
             fi
             (
-                cd painel || exit
+                cd pterodactyl || exit
                 printf "\n \n⚙️  Executando: cp .env.example .env\n \n"
                 cp .env.example .env
             )
         fi
     fi
     (
-        cd painel || exit
+        cd pterodactyl || exit
         if [[ -f "../logs/panel_composer_instalado" ]]; then
             echo "| Composer | 🟢  Instalado                    |"
         else
@@ -315,8 +295,8 @@ else
         printf "\n \n📑  Verificação do Painel Concluída...\n \n"
     else
         printf "\n \n⚙️  Executando: Atribuição de permissões\n \n"
-        fakeroot chown -R nginx:nginx /home/container/painel/*
-        printf "\n \n⚙️  Instalação do painel concluída\n \n"
+        fakeroot chown -R nginx:nginx /home/container/pterodactyl/*
+        printf "\n \n⚙️  Instalação do pterodactyl concluída\n \n"
         touch ./logs/panel_instalado
     fi
 fi
@@ -344,7 +324,7 @@ fi
 if [ "${DEVELOPER}" = "1" ]; then
     echo -e "🪄  Modo Desenvolvedor Ativo"
     (
-        cd "painel" || exit
+        cd "pterodactyl" || exit
         echo -e "\n \n🔒  Executando Permições das pastas storage e bootstrap/cache/\n \n"
         fakeroot chmod -R 755 storage/* bootstrap/cache/
         echo -e "\n \n🎼  Executando Composer\n \n"
@@ -355,13 +335,13 @@ if [ "${DEVELOPER}" = "1" ]; then
         php artisan view:clear 
         php artisan cache:clear 
         php artisan route:clear
-        echo -e "\n \n🔒  Executando Permições da pasta home painel\n \n"
-        fakeroot chown -R nginx:nginx /home/container/painel/*
+        echo -e "\n \n🔒  Executando Permições da pasta home pterodactyl\n \n"
+        fakeroot chown -R nginx:nginx /home/container/pterodactyl/*
     )
 fi
 
-if [ -f "./painel/panel_github_instalado" ]; then
-    echo -e "❗️  Você está usando um painel puxado do GitHub, será necessário executar o comando ${bold}${lightblue}build${normal}, pois o servidor irá retornar erro 500.\n \n"
+if [ -f "./pterodactyl/panel_github_instalado" ]; then
+    echo -e "❗️  Você está usando um pterodactyl puxado do GitHub, será necessário executar o comando ${bold}${lightblue}build${normal}, pois o servidor irá retornar erro 500.\n \n"
 fi
 
 if [ -z "$BACKUP" ] || [ "$BACKUP" == "1" ]; then
@@ -373,7 +353,7 @@ if [ -z "$BACKUP" ] || [ "$BACKUP" == "1" ]; then
             touch backups/executado
             sleep 5
         fi
-        cp painel/.env backups/.env-$(date +%F-%Hh%Mm)
+        cp pterodactyl/.env backups/.env-$(date +%F-%Hh%Mm)
         echo "🟢  Backup do .env realizado!"
         echo "⚠️  Backups com mais de 1 semana serão deletados automaticamente!"
         find ./backups/ -mindepth 1 -not -name "executado" -mtime +7 -delete
@@ -385,8 +365,8 @@ else
 fi
 
 if [[ -f "./logs/panel_instalado" ]]; then
-    bash <(curl -s https://raw.githubusercontent.com/Ashu11-A/Ashu_eggs/main/Paneldactyl/version.sh)
-    bash <(curl -s https://raw.githubusercontent.com/Ashu11-A/Ashu_eggs/main/Paneldactyl/launch.sh)
+    bash <(curl -s https://raw.githubusercontent.com/CatLegendDev/pterodactyl-egg/main/files/version.sh)
+    bash <(curl -s https://raw.githubusercontent.com/CatLegendDev/pterodactyl-egg/main/files/launch.sh)
 else
     echo "Algo muito errado aconteceu."
 fi
