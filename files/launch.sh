@@ -30,18 +30,11 @@ bold=$(echo -en "\e[1m")
 lightblue=$(echo -en "\e[94m")
 normal=$(echo -en "\e[0m")
 rm -rf /home/container/tmp/*
-printf "
-  ____      _   _                              _ 
- / ___|__ _| |_| |    ___  __ _  ___ _ __   __| |
-| |   / _` | __| |   / _ \/ _` |/ _ \ '_ \ / _` |
-| |__| (_| | |_| |__|  __/ (_| |  __/ | | | (_| |
- \____\__,_|\__|_____\___|\__, |\___|_| |_|\__,_|
-                          |___/
-\n \n"
-echo "🟢  Iniciando PHP-FPM..."
+printf "CatLegend"
+echo "🟢  PHP-FPM запущен"
 nohup /usr/sbin/php-fpm81 --fpm-config /home/container/php-fpm/php-fpm.conf --daemonize >/dev/null 2>&1 &
 
-echo "🟢  Iniciando Nginx..."
+echo "🟢  Nginx запущен"
 nohup /usr/sbin/nginx -c /home/container/nginx/nginx.conf -p /home/container/ >/dev/null 2>&1 &
 if [ "${SERVER_IP}" = "0.0.0.0" ]; then
     MGM="na porta ${SERVER_PORT}"
@@ -49,12 +42,12 @@ else
     MGM="em ${SERVER_IP}:${SERVER_PORT}"
 fi
 echo "🟢  Inicializado com sucesso ${MGM}..."
-echo "🟢  Iniciando worker do pterodactyl.."
+echo "🟢  Pterodactyl запущен"
 nohup php /home/container/pterodactyl/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3 >/dev/null 2>&1 &
-echo "🟢  Iniciando cron..."
+echo "🟢  Cron запущен"
 nohup bash <(curl -s https://raw.githubusercontent.com/CatLegendDev/pterodactyl-egg/main/files/cron.sh) >/dev/null 2>&1 &
 
-echo "📃  Comandos Disponíveis: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}. Use ${bold}${lightblue}help${normal} para saber mais..."
+echo "📃  Команды: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}. Use ${bold}${lightblue}help${normal} para saber mais..."
 
 while read -r line; do
     if [[ "$line" == "help" ]]; then
