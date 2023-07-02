@@ -29,7 +29,7 @@ reinstall_f_start="rm -rf php-fpm"
 bold=$(echo -en "\e[1m")
 lightblue=$(echo -en "\e[94m")
 green=$(echo -en "\033[92m")
-orange=$(echo -en "\033[202m")
+orange=$(echo -en "\033[31m")
 normal=$(echo -en "\e[0m")
 rm -rf /home/container/tmp/*
 clear
