@@ -40,9 +40,9 @@ nohup /usr/sbin/php-fpm81 --fpm-config /home/container/php-fpm/php-fpm.conf --da
 echo "🟢  ${green}Nginx работает"
 nohup /usr/sbin/nginx -c /home/container/nginx/nginx.conf -p /home/container/ >/dev/null 2>&1 &
 if [ "${SERVER_IP}" = "0.0.0.0" ]; then
-    MGM="na porta ${SERVER_PORT}"
+    MGM="порту ${SERVER_PORT}"
 else
-    MGM="em ${SERVER_IP}:${SERVER_PORT}"
+    MGM="${SERVER_IP}:${SERVER_PORT}"
 fi
 echo "🟢  ${green}Pterodactyl работает"
 nohup php /home/container/pterodactyl/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3 >/dev/null 2>&1 &
