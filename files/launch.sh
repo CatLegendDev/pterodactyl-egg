@@ -29,11 +29,11 @@ reinstall_f_start="rm -rf php-fpm"
 bold=$(echo -en "\e[1m")
 lightblue=$(echo -en "\e[94m")
 green=$(echo -en "\033[92m")
-orange=$(echo -en "\033[93m")
+orange=$(echo -en "\033[202m")
 normal=$(echo -en "\e[0m")
 rm -rf /home/container/tmp/*
 clear
-printf "${bold}${orange}by CatLegend\n\n"
+printf "${bold}${orange}by CatLegend\n \n"
 echo "🟢  PHP-FPM работает"
 nohup /usr/sbin/php-fpm81 --fpm-config /home/container/php-fpm/php-fpm.conf --daemonize >/dev/null 2>&1 &
 
