@@ -51,7 +51,7 @@ nohup bash <(curl -s https://raw.githubusercontent.com/CatLegendDev/pterodactyl-
 echo "🟢  ${green}Запущено на ${MGM}"
 echo " "
 
-echo "\n📃  Команды: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}."
+echo "📃  Команды: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}."
 
 while read -r line; do
     if [[ "$line" == "help" ]]; then
