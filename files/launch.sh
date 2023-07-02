@@ -30,24 +30,26 @@ bold=$(echo -en "\e[1m")
 lightblue=$(echo -en "\e[94m")
 normal=$(echo -en "\e[0m")
 rm -rf /home/container/tmp/*
+clear
 printf "CatLegend"
-echo "🟢  PHP-FPM запущен"
+echo "🟢  PHP-FPM работает"
 nohup /usr/sbin/php-fpm81 --fpm-config /home/container/php-fpm/php-fpm.conf --daemonize >/dev/null 2>&1 &
 
-echo "🟢  Nginx запущен"
+echo "🟢  Nginx работает"
 nohup /usr/sbin/nginx -c /home/container/nginx/nginx.conf -p /home/container/ >/dev/null 2>&1 &
 if [ "${SERVER_IP}" = "0.0.0.0" ]; then
     MGM="na porta ${SERVER_PORT}"
 else
     MGM="em ${SERVER_IP}:${SERVER_PORT}"
 fi
-echo "🟢  Inicializado com sucesso ${MGM}..."
-echo "🟢  Pterodactyl запущен"
+echo "🟢  Pterodactyl работает"
 nohup php /home/container/pterodactyl/artisan queue:work --queue=high,standard,low --sleep=3 --tries=3 >/dev/null 2>&1 &
-echo "🟢  Cron запущен"
+echo "🟢  Cron работает"
 nohup bash <(curl -s https://raw.githubusercontent.com/CatLegendDev/pterodactyl-egg/main/files/cron.sh) >/dev/null 2>&1 &
+echo "🟢  Запущено на ${MGM}"
 
-echo "📃  Команды: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}. Use ${bold}${lightblue}help${normal} para saber mais..."
+
+echo "📃  Команды: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}."
 
 while read -r line; do
     if [[ "$line" == "help" ]]; then
