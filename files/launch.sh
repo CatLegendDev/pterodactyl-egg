@@ -49,9 +49,9 @@ nohup php /home/container/pterodactyl/artisan queue:work --queue=high,standard,l
 echo "🟢  ${green}Cron работает"
 nohup bash <(curl -s https://raw.githubusercontent.com/CatLegendDev/pterodactyl-egg/main/files/cron.sh) >/dev/null 2>&1 &
 echo "🟢  ${green}Запущено на ${MGM}"
+echo " "
 
-
-printf "\n📃  Команды: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}."
+echo "\n📃  Команды: ${bold}${lightblue}composer${normal}, ${bold}${lightblue}setup${normal}, ${bold}${lightblue}database${normal}, ${bold}${lightblue}migrate${normal}, ${bold}${lightblue}user${normal}, ${bold}${lightblue}build${normal}, ${bold}${lightblue}reinstall${normal}."
 
 while read -r line; do
     if [[ "$line" == "help" ]]; then
